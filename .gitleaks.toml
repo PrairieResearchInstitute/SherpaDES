@@ -1,0 +1,35 @@
+title = "SherpaDES gitleaks configuration"
+
+[extend]
+useDefault = true
+
+# Secret-like variables assigned a real-looking value (not a placeholder).
+[[rules]]
+id = "sherpa-env-secret-assignment"
+description = "Secret-like variable assigned a real-looking value"
+regex = '''(?i)\b(?:LUMEN_API_KEY|CILOGON_CLIENT_SECRET|WEBUI_SECRET_KEY|ADS_TOKEN|S3_SECRET_ACCESS_KEY|OSN_SECRET_KEY|POSTGRES_PASSWORD|FILES_SIGNING_KEY|SIGNING_KEY|SLACK_WEBHOOK_URL|OPENAI_API_KEY|GITHUB_TOKEN)\b\s*[=:]\s*["']?([A-Za-z0-9/+=_.:@-]{16,})'''
+secretGroup = 1
+keywords = [
+  "lumen_api_key", "cilogon_client_secret", "webui_secret_key", "ads_token",
+  "s3_secret_access_key", "osn_secret_key", "postgres_password", "signing_key",
+  "slack_webhook_url", "openai_api_key", "github_token",
+]
+
+  [[rules.allowlists]]
+  description = "Obvious placeholders"
+  regexes = ['''(?i)change[-_]?me|your[-_]|example|placeholder|replace[-_]?me|x{6,}|\*{3,}''']
+
+# Public repo rule: no IP addresses (hosts are named in deploy/ templates as placeholders).
+[[rules]]
+id = "sherpa-ipv4-address"
+description = "IPv4 address (environment details must not be committed)"
+regex = '''\b((?:25[0-5]|2[0-4][0-9]|1?[0-9]?[0-9])(?:\.(?:25[0-5]|2[0-4][0-9]|1?[0-9]?[0-9])){3})\b'''
+secretGroup = 1
+
+  [[rules.allowlists]]
+  description = "Loopback, unspecified and documentation ranges"
+  regexes = ['''^(127\.0\.0\.1|0\.0\.0\.0|192\.0\.2\.[0-9]+|198\.51\.100\.[0-9]+|203\.0\.113\.[0-9]+)$''']
+
+  [[rules.allowlists]]
+  description = "Lock files contain version strings that look like addresses"
+  paths = ['''(^|/)(uv\.lock|poetry\.lock|package-lock\.json|pnpm-lock\.yaml)$''']

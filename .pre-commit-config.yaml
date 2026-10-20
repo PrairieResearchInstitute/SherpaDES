@@ -1,0 +1,27 @@
+# Install once with: pre-commit install
+repos:
+  - repo: https://github.com/gitleaks/gitleaks
+    rev: v8.30.1
+    hooks:
+      - id: gitleaks
+
+  - repo: https://github.com/pre-commit/pre-commit-hooks
+    rev: v6.0.0
+    hooks:
+      - id: check-added-large-files
+        args: ["--maxkb=500"]
+      - id: detect-private-key
+      - id: check-merge-conflict
+      - id: check-yaml
+      - id: check-toml
+      - id: end-of-file-fixer
+      - id: trailing-whitespace
+
+  - repo: local
+    hooks:
+      - id: forbid-data-and-secret-files
+        name: forbid data, key and real env files
+        entry: Data files, keys and real env files must never be committed (see docs/security/data-handling.md)
+        language: fail
+        files: '(?i)(\.(duckdb|parquet|sqlite3?|db|fits|fz|tar|tgz|gz|zip|7z|rar|pem|key|p12|pfx|jks|gguf|safetensors|npy|npz|pkl)$|(^|/)\.env(\..*)?$|(^|/)[^/]*\.env$|(^|/)\.s3_access$|(^|/)NOTES\.txt$)'
+        exclude: '\.env\.example$'
