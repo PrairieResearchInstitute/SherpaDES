@@ -1,0 +1,10 @@
+version: 2
+updates:
+  # Keeps the pinned GitHub Actions current. Add the pip, docker and uv
+  # ecosystems when the first manifests exist (Phase 1).
+  - package-ecosystem: github-actions
+    directory: /
+    schedule:
+      interval: weekly
+    commit-message:
+      prefix: ci
